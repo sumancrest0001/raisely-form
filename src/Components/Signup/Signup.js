@@ -14,6 +14,7 @@ class Signup extends Component {
             required: true,
             minLength: 3,
           },
+          message: 'Must have at least 3 characters',
           valid: false,
         },
         lastName: {
@@ -22,13 +23,16 @@ class Signup extends Component {
             required: true,
             minLength: 3,
           },
+          message: 'Must have at least 3 characters',
           valid: false,
         },
         email: {
           value: '',
           validation: {
             required: true,
+            pattern: /^[a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]+@[a-zA-Z0-9-]+(?:\.[a-zA-Z0-9-]+)*$/,
           },
+          message: 'Enter valid email',
           valid: false,
         },
         password: {
@@ -37,28 +41,57 @@ class Signup extends Component {
             required: true,
             minLength: 6,
           },
+          message: 'Must have at least 6 characters',
           valid: false,
         },
-        confirmPassword: '',
+        confirmPassword: {
+          value: '',
+          valid: false,
+        },
       },
     }
   }
 
-  handleChange = event => {
-    const { value, name } = event.target;
-    if (name === 'confirmPassword') {
-      this.setState({ [name]: value });
+  checkValidity = (validationRules, value) => {
+    let isValid = true;
+    if (!validationRules) {
+      return true;
     } else {
-      const updatedData = {
-        ...this.state.data
-      };
-      const updatedField = {
-        ...updatedData[name]
-      };
-      updatedField.value = value;
-      updatedData[name] = updatedField;
-      this.setState({ data: updatedData });
+      if (validationRules.required) {
+        isValid = value.trim() !== '' && isValid;
+      }
+      if (validationRules.minLength) {
+        isValid = value.length >= validationRules.minLength && isValid;
+      }
+      if (validationRules.pattern) {
+        isValid = value.match(validationRules.pattern) && isValid;
+      }
     }
+    return isValid;
+  }
+
+  comparePasswords = (confirmPassword, password) => {
+    return confirmPassword === password ? true : false;
+  }
+
+  handleChange = event => {
+    const { password } = this.state.data;
+    const { value, name } = event.target;
+    const updatedData = {
+      ...this.state.data
+    };
+    const updatedField = {
+      ...updatedData[name]
+    };
+    updatedField.value = value;
+    if (name === 'confirmPassword') {
+      updatedField.valid = this.comparePasswords(value, password.value);
+    } else {
+      updatedField.valid = this.checkValidity(updatedField.validation, value);
+    }
+    updatedData[name] = updatedField;
+    this.setState({ data: updatedData });
+    console.log(this.state.data);
   }
 
   render() {
@@ -77,6 +110,8 @@ class Signup extends Component {
             value={firstName.value}
             handleChange={this.handleChange}
             placeholder='First name'
+            message={firstName.message}
+            validity={firstName.valid}
             required
           />
           <FormInput
@@ -86,6 +121,8 @@ class Signup extends Component {
             value={lastName.value}
             handleChange={this.handleChange}
             placeholder='Last name'
+            message={lastName.message}
+            validity={lastName.valid}
             required
           />
           <FormInput
@@ -95,6 +132,8 @@ class Signup extends Component {
             value={email.value}
             handleChange={this.handleChange}
             placeholder='Email please'
+            message={email.message}
+            validity={email.valid}
             required
           />
           <FormInput
@@ -104,15 +143,18 @@ class Signup extends Component {
             value={password.value}
             handleChange={this.handleChange}
             placeholder='Enter password'
+            message={password.message}
+            validity={password.valid}
             required
           />
           <FormInput
             type="password"
             name="confirmPassword"
             label="Confirm password:"
-            value={confirmPassword}
+            value={confirmPassword.value}
             handleChange={this.handleChange}
             placeholder='Confirm password'
+            validity={confirmPassword.valid}
             required
           />
           <button type="submit" className={classes.SignupButton}>Sign up</button>

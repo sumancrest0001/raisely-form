@@ -1,0 +1,32 @@
+.Group {
+  margin: 0.5rem 0;
+}
+
+.Label {
+  font-weight: bold;
+  display: block;
+  margin-bottom: 8px;
+  margin-bottom: 0.5rem;
+}
+
+.FormInput {
+  outline: none;
+  border: 1px solid #000;
+  background: transparent;
+  font: inherit;
+  padding: 6px 10px;
+  margin: 10px auto;
+  display: block;
+  width: 95%;
+  box-sizing: border-box;
+}
+
+.FormInput:focus {
+  outline: 1px solid #4a24b9;
+  border: 1px solid #4a24b9;
+  transition: 0.3s all;
+}
+
+.Invalid {
+  border: 1px solid red;
+}

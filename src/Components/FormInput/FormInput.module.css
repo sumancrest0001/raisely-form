@@ -21,7 +21,7 @@
   box-sizing: border-box;
 }
 
-.FormInput:focus {
+.Input:focus {
   outline: 1px solid #4a24b9;
   border: 1px solid #4a24b9;
   transition: 0.3s all;
@@ -29,4 +29,10 @@
 
 .Invalid {
   border: 1px solid red;
+}
+
+.Invalid:focus {
+  outline: 1px solid red;
+  border: 1px solid red;
+  transition: 0.3s all;
 }

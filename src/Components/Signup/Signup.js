@@ -64,7 +64,8 @@ class Signup extends Component {
         isValid = value.length >= validationRules.minLength && isValid;
       }
       if (validationRules.pattern) {
-        isValid = value.match(validationRules.pattern) && isValid;
+        isValid = (validationRules.pattern.test(value)) && isValid;
+        console.log(isValid);
       }
     }
     return isValid;

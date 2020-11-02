@@ -1,7 +1,8 @@
 import React, { Component } from 'react';
+import axios from 'axios';
 import FormInput from '../FormInput/FormInput';
+import MessageModal from '../../UI/messageModal/messageModal';
 import classes from './Signup.module.css';
-import { userCheckFormat, signUpFormat } from '../../utility/utility';
 
 class Signup extends Component {
   constructor() {
@@ -54,6 +55,10 @@ class Signup extends Component {
         },
       },
       allValid: true,
+      httpRequest: {
+        message: '',
+        openModal: false,
+      }
     }
   }
 
@@ -67,6 +72,9 @@ class Signup extends Component {
 
   checkValidity = (validationRules, value) => {
     let isValid = true;
+    let updatedHttpData = {
+      ...this.state.httpRequest
+    }
     if (!validationRules) {
       return true;
     } else {
@@ -78,10 +86,66 @@ class Signup extends Component {
       }
       if (validationRules.pattern) {
         isValid = (validationRules.pattern.test(value)) && isValid;
-        console.log(isValid);
+        if (isValid === true) {
+          axios.post('https://api.raisely.com/v3/check-user', {
+            "campaignUuid": "46aa3270-d2ee-11ea-a9f0-e9a68ccff42a",
+            "data": {
+              "email": value,
+            }
+          }).then(
+            response => {
+              if (response.data.data.status === 'EXISTS') {
+                updatedHttpData.message = "Email exists. Select another one";
+                updatedHttpData.openModal = true;
+                this.setState({ httpRequest: updatedHttpData });
+                return false;
+              }
+            }
+          ).catch(
+            error => {
+              console.log(error);
+            }
+          )
+        }
       }
     }
     return isValid;
+  }
+
+  handleHttpRequest = (e) => {
+    e.preventDefault();
+    const { firstName, lastName, email, password } = this.state.data;
+    let updatedHttpData = {
+      ...this.state.httpRequest
+    }
+    axios.post('https://api.raisely.com/v3/signup', {
+      "campaignUuid": "46aa3270-d2ee-11ea-a9f0-e9a68ccff42a",
+      "data": {
+        "firstName": firstName.value,
+        "lastName": lastName.value,
+        "email": email.value,
+        "password": password.value
+      }
+    }).then(
+      response => {
+        updatedHttpData.message = "Welcome to Raisely";
+        updatedHttpData.openModal = true;
+        this.setState({ httpRequest: updatedHttpData });
+      }
+    ).catch(
+      error => {
+        updatedHttpData.message = "Something went wrong. Try again";
+        updatedHttpData.openModal = true;
+        this.setState({ httpRequest: updatedHttpData });
+      });
+  }
+
+  closeMessageModal = () => {
+    const updateHttpRequest = {
+      ...this.state.httpRequest
+    };
+    updateHttpRequest.openModal = false;
+    this.setState({ httpRequest: updateHttpRequest });
   }
 
   comparePasswords = (confirmPassword, password) => {
@@ -107,17 +171,16 @@ class Signup extends Component {
 
     updatedData[name] = updatedField;
     this.setState({ data: updatedData, allValid: this.checkAllValidity(updatedData) });
-    console.log(this.state.data);
   }
 
   render() {
     const {
       firstName, lastName, email, password, confirmPassword,
     } = this.state.data;
-    const { allValid } = this.state;
-    console.log(allValid);
+    const { allValid, httpRequest } = this.state;
     return (
       <div className={classes.Signup}>
+        {httpRequest.openModal && <MessageModal onClose={this.closeMessageModal}>{httpRequest.message}</MessageModal>}
         <h2 className={classes.Title}>Create your account with us.</h2>
         <span>Signup to get access</span>
         <form onSubmit={this.handleSubmit} className={classes.Form}>
@@ -180,7 +243,14 @@ class Signup extends Component {
             touched={confirmPassword.touched}
             required
           />
-          <button type="submit" className={classes.SignupButton} disabled={!allValid}>Sign up</button>
+          <button
+            type="submit"
+            className={classes.SignupButton}
+            disabled={!allValid}
+            onClick={this.handleHttpRequest}
+          >
+            Sign up
+          </button>
         </form>
       </div>
     );

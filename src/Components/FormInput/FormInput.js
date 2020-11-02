@@ -3,7 +3,6 @@ import classes from './FormInput.module.css';
 
 const formInput = ({ handleChange, label, validity, message, touched, ...otherProps }) => {
   const cssClasses = [classes.FormInput, classes.Input];
-  console.log(validity);
   if (!validity && touched) {
     cssClasses.pop();
     cssClasses.push(classes.Invalid);

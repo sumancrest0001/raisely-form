@@ -16,6 +16,7 @@ class Signup extends Component {
           },
           message: 'Must have at least 3 characters',
           valid: false,
+          touched: false,
         },
         lastName: {
           value: '',
@@ -25,6 +26,7 @@ class Signup extends Component {
           },
           message: 'Must have at least 3 characters',
           valid: false,
+          touched: false,
         },
         email: {
           value: '',
@@ -34,6 +36,7 @@ class Signup extends Component {
           },
           message: 'Enter valid email',
           valid: false,
+          touched: false,
         },
         password: {
           value: '',
@@ -43,13 +46,23 @@ class Signup extends Component {
           },
           message: 'Must have at least 6 characters',
           valid: false,
+          touched: false,
         },
         confirmPassword: {
           value: '',
           valid: false,
         },
       },
+      allValid: true,
     }
+  }
+
+  checkAllValidity = (inputData) => {
+    let isValid = true;
+    for (let inputField in inputData) {
+      isValid = inputData[inputField].valid && isValid;
+    }
+    return isValid;
   }
 
   checkValidity = (validationRules, value) => {
@@ -85,13 +98,15 @@ class Signup extends Component {
       ...updatedData[name]
     };
     updatedField.value = value;
+    updatedField.touched = true;
     if (name === 'confirmPassword') {
       updatedField.valid = this.comparePasswords(value, password.value);
     } else {
       updatedField.valid = this.checkValidity(updatedField.validation, value);
     }
+
     updatedData[name] = updatedField;
-    this.setState({ data: updatedData });
+    this.setState({ data: updatedData, allValid: this.checkAllValidity(updatedData) });
     console.log(this.state.data);
   }
 
@@ -99,6 +114,8 @@ class Signup extends Component {
     const {
       firstName, lastName, email, password, confirmPassword,
     } = this.state.data;
+    const { allValid } = this.state;
+    console.log(allValid);
     return (
       <div className={classes.Signup}>
         <h2 className={classes.Title}>Create your account with us.</h2>
@@ -113,6 +130,7 @@ class Signup extends Component {
             placeholder='First name'
             message={firstName.message}
             validity={firstName.valid}
+            touched={firstName.touched}
             required
           />
           <FormInput
@@ -124,6 +142,7 @@ class Signup extends Component {
             placeholder='Last name'
             message={lastName.message}
             validity={lastName.valid}
+            touched={lastName.touched}
             required
           />
           <FormInput
@@ -135,6 +154,7 @@ class Signup extends Component {
             placeholder='Email please'
             message={email.message}
             validity={email.valid}
+            touched={email.touched}
             required
           />
           <FormInput
@@ -146,6 +166,7 @@ class Signup extends Component {
             placeholder='Enter password'
             message={password.message}
             validity={password.valid}
+            touched={password.touched}
             required
           />
           <FormInput
@@ -156,9 +177,10 @@ class Signup extends Component {
             handleChange={this.handleChange}
             placeholder='Confirm password'
             validity={confirmPassword.valid}
+            touched={confirmPassword.touched}
             required
           />
-          <button type="submit" className={classes.SignupButton}>Sign up</button>
+          <button type="submit" className={classes.SignupButton} disabled={!allValid}>Sign up</button>
         </form>
       </div>
     );

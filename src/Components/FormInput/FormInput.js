@@ -1,10 +1,10 @@
 import React from 'react';
 import classes from './FormInput.module.css';
 
-const formInput = ({ handleChange, label, validity, message, ...otherProps }) => {
+const formInput = ({ handleChange, label, validity, message, touched, ...otherProps }) => {
   const cssClasses = [classes.FormInput, classes.Input];
   console.log(validity);
-  if (validity === false) {
+  if (!validity && touched) {
     cssClasses.pop();
     cssClasses.push(classes.Invalid);
   }

@@ -26,8 +26,19 @@
 .SignupButton {
   padding: 0.3rem 1rem;
   font-size: 1.2rem;
-  color: #4a24b9;
+  color: #000;
   background: transparent;
-  border: 2px solid #4a24b9;
+  border: 2px solid #000;
   margin: 1rem 0;
+  cursor: pointer;
+}
+
+.SignupButton:hover {
+  color: #4a24b9;
+  border: 2px solid #4a24b9;
+}
+
+.SignupButton:disabled {
+  color: #ccc;
+  cursor: not-allowed;
 }
